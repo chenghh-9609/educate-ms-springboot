@@ -37,3 +37,11 @@ private JdbcTemplate jdbcTemplate;
 2. 请求参数写错了...
    1. get获取请求参数用 `@PathVariable("id")`(放在路径中，如：localhost:5555/getuser/1)或者`@RequestParam(value = "id")`(放在路径中，如：localhost:5555/getuser/?id=1)
    2. post获取请求参数用`@RequestBody Map<String, Object> params`可以解析requestbody里的json对象
+
+# Field dao in com.example.demo.controller.StudentController required a bean of type 'com.example.demo.dao.StudentDAO' that could not be found. 
+https://blog.csdn.net/Julycaka/article/details/80622754
+1. StudentDAOImpl.java没有添加@Repository注解
+2. 启动类DemoApplication.java没有放在外层包，而是放在了controller、model等其他包内
+3. 配置了mybatis，但没有指定扫描的包。
+   1. 启动类加注释:@MapperScan(basePackages = { "mapper所在的包路径" }, sqlSessionFactoryRef = "sqlSessionFactory")，表示扫描xx.xx.mapper包下的所有mapper。
+   2. 直接在你生成出来的xxxMapper.java类上加@Mapper标签。

@@ -13,7 +13,7 @@ import org.springframework.stereotype.Repository;
 import org.springframework.transaction.annotation.Transactional;
 
 import com.example.demo.dao.UserDAO;
-import com.example.demo.domain.User;
+import com.example.demo.model.User;
 
 @Repository
 public class UserDAOImpl implements UserDAO {

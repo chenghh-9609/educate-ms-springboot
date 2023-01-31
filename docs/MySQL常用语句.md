@@ -14,6 +14,9 @@ ALTER TABLE old_table_name RENAME TO new_table_name;
 -- 删除表
 DROP TABLE new_table_name;
 ```
+
+
+
 ### 修改表字段
 ```sql
 -- 新增字段
@@ -26,6 +29,9 @@ ALTER TABLE students DROP average;
 ALTER TABLE students MODIFY gender char(2) NOT NULL DEFAULT 'M';
 ALTER TABLE students CHANGE gender sgender VARCHAR(20) NOT NULL;
 ```
+
+
+
 ### 增删改
 ```sql
 -- 插入数据
@@ -44,6 +50,9 @@ INSERT INTO students (id, class_id, name, gender, score) VALUES (1, 1, '小明',
 -- 插入或忽略（记录存在则什么也不做，不存在则插入）
 INSERT IGNORE INTO students (id, class_id, name, gender, score) VALUES (1, 1, '小明', 'F', 99);
 ```
+
+
+
 ### 基础查询
 ```sql
 -- 基础查询
@@ -62,31 +71,35 @@ SELECT * FROM students WHERE class_id <> 3;
 SELECT * FROM students WHERE score BETWEEN 60 AND 90;
 -- 端点
 SELECT * FROM students WHERE score IN (60, 90);
-```
-
-### 投影查询（指定字段）
-```sql
+-- null查询
+SELECT * FROM students where score is null;
+-- 投影查询（指定字段）
 SELECT id, name, score FROM students;
-SELECT id, name, score FROM students WHERE score BETWEEN 60 AND 90;;
+SELECT id, name, score FROM students WHERE score BETWEEN 60 AND 90;
 SELECT id, name, score FROM students WHERE name LIKE '张%';
 ```
 
-### 排序
+### 排序(ORDER BY, DESC)
 ```sql
 -- 正序
-SELECT * FROM students ORDER BY score ;
+SELECT * FROM students 
+ORDER BY score ;
 -- 倒序
-SELECT * FROM students ORDER BY score DESC;
+SELECT * FROM students 
+ORDER BY score DESC;
 -- 先按score倒序，score相同的则按gender排
-SELECT * FROM students ORDER BY score DESC, gender;
+SELECT * FROM students 
+ORDER BY score DESC, gender;
 -- 条件排序放在where后
-SELECT id, name, score FROM students
+SELECT id, name, score 
+FROM students
 WHERE score BETWEEN 80 and 90
 ORDER BY score desc;
 ```
 
-### 分页查询
+### 分页(LIMIT)
 ```sql
+-- LIMIT N OFFSET M 等价于 LIMIT N,M
 -- 每页3条记录，第1页
 SELECT id, name, gender, score
 FROM students
@@ -102,9 +115,14 @@ SELECT id, name, gender, score
 FROM students
 ORDER BY score DESC
 LIMIT 3 OFFSET 6
+-- 筛选订单最多的用户
+SELECT customer_number FROM orders 
+GROUP BY customer_number 
+ORDER BY count(customer_number) DESC
+LIMIT 1;
 ```
 
-### 聚合查询
+### 聚合(COUNT|AVG|SUM|...)
 ```sql
 -- 总记录数
 SELECT COUNT(*) FROM students;
@@ -117,15 +135,26 @@ SELECT SUM(score) FROM students WHERE gender='F';
 SELECT MAX(score) FROM students WHERE gender='M';
 -- 最小值
 SELECT MIN(score) FROM students WHERE gender='F';
+-- 日期差，查询生日在1999年1月31之前30天的
+SELECT birthday FROM students WHERE datediff('1999-01-31', birthday) < 30
 ```
-### 分组
+### 分组(GROUP BY)
 ```sql
 -- 各个班级的平均分
-SELECT class_id, AVG(score) avg FROM students GROUP BY class_id;
+SELECT class_id, AVG(score) avg 
+FROM students 
+GROUP BY class_id;
 -- 各个班级的男、女人数
-SELECT class_id, count(gender) num FROM students GROUP BY class_id, gender;
+SELECT class_id, count(gender) num 
+FROM students 
+GROUP BY class_id, gender;
+-- 查找大于2人的班级id
+SELECT class_id 
+FROM students
+GROUP BY class_id 
+HAVING count(id) > 2;
 ```
-### 多表查询(多表行列的乘积)
+### 多表查询
 ```sql
 SELECT * FROM students, classes;
 -- 投影
@@ -148,7 +177,7 @@ SELECT
 FROM students s, classes c
 WHERE s.gender = 'M' AND c.id = 1;
 ```
-### 连接查询
+### 连接(JOIN)
 ```sql
 -- 内连接，查询交集s.class_id和c.id都不为null且相等
 SELECT 
@@ -204,4 +233,9 @@ SELECT
 FROM students s
 FULL OUTER JOIN classes c
 ON s.class_id = c.id
+-- 自连接 (查询收入超过经理的员工)
+SELECT e1.name AS employee
+FROM employee e1, employee e2
+WHERE e1.managerId = e2.id
+AND e1.salary > e2.salary
 ```

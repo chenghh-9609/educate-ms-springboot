@@ -2,7 +2,7 @@ package com.example.demo.dao;
 
 import java.util.List;
 
-import com.example.demo.domain.User;
+import com.example.demo.model.User;
 public interface UserDAO {
   public int register(String name, String pwd);
   public int login(String name, String pwd);
